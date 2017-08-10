@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Titanic Data Exploration</title>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+    <script type="text/javascript">
+      //function of drawing bar chart with dimplejs
+	  function draw(data) {
+      
+      /*
+        D3.js setup code
+      */
+
+          "use strict";
+		  // setting width,height and margin for visualization
+          var margin = 100,
+              width = 1000 - margin,
+              height = 600 - margin;
+         //creating svg element in body
+          var svg = d3.select("#bar")
+            .append("svg")
+            .attr("width", width + margin)
+            .attr("height", height + margin);
+		
+          //Dimple.js Chart construction code
+          var myChart = new dimple.chart(svg, data);
+		  var x = myChart.addCategoryAxis("x", ["class","sex"]); //creating x-axis
+		  x.title = 'Passenger Class';
+		  var y= myChart.addMeasureAxis("y", "survival_rate"); //creating y-axis
+		  y.title='survival rate';
+         var mySeries =myChart.addSeries("sex", dimple.plot.bar); //drawing bar chart
+		  
+		  myChart.addLegend("80%", "10%", "10%", "20%", "right");//adding legend
+          myChart.draw();//finally drawing the whole visualization
+		  
+
+        mySeries.getTooltipText = function(e) {
+
+            // hovering over the chart fires an event
+            // which creates an object 'e' 
+            // with the information that you want
+
+            // when you hover over different parts of your chart
+            // this statement outputs the contents of 'e' to console:
+            console.log(e);
+
+            // You can change the names of tooltip entries
+            // The key will be substituted for the value, see later
+
+            var cngCase = {
+                "female": "Female Passengers",
+                "male": "Male Passengers"
+            };
+
+            // create the "Total Survived" Survived from the data
+            var Total;
+
+            data.forEach(function(d){
+              if(d.class === e.xField[0] & d.sex === e.aggField[0]){
+                Total = d.total_survived;
+              }
+            })
+			// commas give new lines in your tooltip
+            // What you include in the tooltip is up to you
+            // but it has to be information from object 'e'
+            return [cngCase[e.aggField[0]], "Passenger Class: " + e.xField[0], "Survival Rate: " + e.y, "Total Survived: " + Total];
+        };
+		   
+		 };
+      </script>
+	  <style>
+	  h1,h2{
+	  text-align:center;
+	  color:green;}
+	  #c{
+	  text-align:center;
+	  }
+	  </style>
+  </head>
+   <body>
+   <h1>Titanic dataset Exploration</h1>
+   
+   <div>
+   <p>
+   On April 15, 1912, during her maiden voyage, the Titanic sank after colliding with an iceberg, killing 1502 out of 2224 passengers and crew. 
+   One of the reasons that the shipwreck led to such loss of life was that there were not enough lifeboats for the passengers and crew. Although there was some element of luck involved in surviving the sinking, some groups of people were more likely to survive than others, such as women, children, and the upper-class. 
+   The dataset is explored for such patterns and the visualizations are plotted on demonstrate the findings. 
+  </p>
+   <h2>Survival Rate of male and female respective of passenger class</h2>
+  </div>
+  <div id="bar">
+ <script type="text/javascript">
+  //loading dataset and calling draw function
+  d3.csv("titanic_class.csv", draw);
+  </script>
+  </div>
+ 
+  <div>
+  <h2>conclusion</h2>
+  <p id="c">
+  woman had best chance to survived in first class and they had survived more than man in any class. 
+  <p>
+  <p id="c">
+  Percentage of female survival in first class > Percentage of female survival in second class > Percentage of female survival in the third class
+  </p>
+  <p id="c">Percentage of male survival in first class > Percentage of male survival in second class > Percentage of male survival in the third class
+  </p>
+ </div>
+</body>
+</html>   
+  
